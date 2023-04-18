@@ -1,0 +1,27 @@
+export const createGig = async (req, res, next) => {
+    if (!req.isSeller)
+      return next(createError(403, "Only sellers can create a gig!"));
+  
+    const newGig = new Gig({
+      userId: req.userId,
+      ...req.body,
+    });
+  
+    try {
+       await newGig.save();
+      //res.status(201).json(savedGig);
+      res.status(201).send("has been created")
+
+    } catch (err) {
+      next(err);
+    }
+  };
+export const deleteGig=(req,res,next)=>{
+
+}
+export const getGig=(req,res,next)=>{
+
+}
+export const getGigs=(req,res,next)=>{
+
+}
