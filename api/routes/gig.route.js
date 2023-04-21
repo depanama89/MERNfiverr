@@ -9,9 +9,7 @@ import {
 
 const router= express.Router()
 
-router.route("/").post( verifyToken, async(req,res,next)=>{
-    res.status(200).json({message:"Create Contacts"})
-});
+router.post("/",verifyToken,createGig)
 router.delete("/:id",verifyToken,deleteGig)
 router.get("/single/:id",verifyToken,getGig)
 router.get("/single/:id",verifyToken,getGigs)

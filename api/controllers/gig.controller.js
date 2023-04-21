@@ -1,3 +1,4 @@
+import gigModel from "../models/gig.model.js";
 import Gig from "../models/gig.model.js"
 import creatorError from "../utils/creatorError.js"
 
@@ -19,6 +20,18 @@ export const createGig = async (req, res, next) => {
   }
 };
 export const deleteGig = async (req,res,next)=>{
+  try{
+    const gig = await Gig.findById(req.params.id)
+
+    if(gig.userId !== req.userId)
+      return next(creatorError(403,"You can delete only your Gig!"))
+
+    await Gig.findByIdAndDelete(re.params.id)
+    res.status(200).send("gig has been deleted")
+
+  }catch(err){
+    next(err)
+  }
 
 }
 export const getGig = async (req,res,next)=>{
