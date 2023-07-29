@@ -1,11 +1,11 @@
-import gigModel from "../models/gig.model.js";
+
 import Gig from "../models/gig.model.js"
 import creatorError from "../utils/creatorError.js"
 
 
 export const createGig = async (req, res, next) => {
   if (!req.isSeller)
-    return next(createError(403, "Only sellers can create a gig!"));
+    return next(creatorError(403, "Only sellers can create a gig!"));
 
   const newGig = new Gig({
     userId: req.userId,
@@ -26,7 +26,7 @@ export const deleteGig = async (req,res,next)=>{
     if(gig.userId !== req.userId)
       return next(creatorError(403,"You can delete only your Gig!"))
 
-    await Gig.findByIdAndDelete(re.params.id)
+    await Gig.findByIdAndDelete(req.params.id)
     res.status(200).send("gig has been deleted")
 
   }catch(err){
@@ -35,8 +35,39 @@ export const deleteGig = async (req,res,next)=>{
 
 }
 export const getGig = async (req,res,next)=>{
+  try{
+    const gig = await Gig.findById(req.params.id)
+    if(!gig) next(creatorError(400,"gig not found!"))
+
+    res.status(200).send(gig)
+
+  }catch(err){
+    next(err)
+
+  }
 
 }
 export const getGigs = async (req,res,next)=>{
+
+  const q = req.query
+
+  const filters = {
+    ...(q.userId && { userId: q.userId }),
+    ...(q.cat && { cat: q.cat }),
+    ...((q.min || q.max) && {
+      price: {
+        ...(q.min && { $gt: q.min }),
+        ...(q.max && { $lt: q.max }),
+      },
+    }),
+    ...(q.search && { title: { $regex: q.search, $options: "i" } }),
+  };
+try{
+  const gigs = await Gig.find(filters).sort({[q.sort]:-1})
+  res.status(200).send(gigs)
+}catch(err){
+  next(err)
+
+}
 
 }

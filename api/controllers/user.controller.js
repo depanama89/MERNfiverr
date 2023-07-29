@@ -13,4 +13,14 @@ export const deleteUser = async (req,res)=>{
     
     
 }
+export const getUser = async (req,res)=>{
+    const user = await User.findById(req.params.id)
+    
+    res.status(200).send(user)
+    // next(createError(200,"Deleted."))
+    
+    
+}
+
+
 
